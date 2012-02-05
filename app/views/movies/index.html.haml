@@ -1,12 +1,34 @@
 -#  This file is app/views/movies/index.html.haml
-%h1 All Movies
 
+%h1 All Movies
+= form_tag movies_path, :method => :get do
+  Include: 
+  - @all_ratings.each do |rating|
+    = rating
+    - if @checked_ratings.index(rating)
+      = check_box_tag "ratings[#{rating}]", 1, true
+    - else
+      = check_box_tag "ratings[#{rating}]"
+    - if @t_HL
+      = hidden_field_tag "ps_type", "title"
+    - elsif @r_HL
+      = hidden_field_tag "ps_type", "release_date"
+    - else
+      = hidden_field_tag "ps_type", nil
+  = submit_tag 'Refresh', :id => "ratings_submit"
+  
 %table#movies
   %thead
     %tr
-      %th Movie Title
+      - if @t_HL
+        %th.hilite= link_to 'Movie Title', movies_path({:s_type => "title", :checked_ratings => @checked_ratings}), :id => "title_header"
+      - else
+        %th= link_to 'Movie Title', movies_path({:s_type => "title", :checked_ratings => @checked_ratings}), :id => "title_header"
       %th Rating
-      %th Release Date
+      - if @r_HL
+        %th.hilite= link_to 'Release Date', movies_path({:s_type => "release_date", :checked_ratings => @checked_ratings}), :id => "release_date_header"
+      - else
+        %th= link_to 'Release Date', movies_path({:s_type => "release_date", :checked_ratings => @checked_ratings}), :id => "release_date_header"
       %th More Info
   %tbody
     - @movies.each do |movie|
